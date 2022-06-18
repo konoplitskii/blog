@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost:27017/archblog')
   console.log('connect DB')  
 })
 .catch(()=> {
-    console.log('DB error')
+    console.log('DB errorr')
 })
 
 const app = express();
