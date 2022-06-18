@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import {registerValidation} from './validation/auth.js'
 import {validationResult} from 'express-validator';
-import userModal from  './models/User.js';
+import userModel from  './models/User.js';
 
 
 mongoose.connect('mongodb://localhost:27017/archblog')
@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost:27017/archblog')
   console.log('connect DB')  
 })
 .catch(()=> {
-    console.log('DB errorr')
+    console.log('DB error')
 })
 
 const app = express();
@@ -31,6 +31,52 @@ app.use(express.json());
 // });
 
 
+app.post('/auth/login', async (req, res) => {
+    try {
+        //  Находим пользователя
+        const user = await userModel.findOne({
+            email: req.body.email
+        });
+        if (!user) {
+            //если пользователь по email не найден
+            return res.status(400).json({
+                message: 'Пользователь не найден'
+            });
+        }
+
+        //сравниваем два пороля
+        const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
+
+        if (!isValidPass) {
+            return res.status(400).json({
+                message: 'Неверный логин или пароль'
+            });
+        }
+
+        const token = Jwt.sign({
+                _id: user._id,
+            },
+            'secret123', {
+                expiresIn: '30d'
+            }
+        );
+
+        const {passwordHash, ...userData} = user._doc
+
+        res.json({
+            ...userData,
+            token
+        });
+
+
+    } catch (e) {
+        res.status(500).json({
+            message:'Не удалось авторизоватся'
+        })
+    }
+})
+
+
 app.post('/auth/register',registerValidation, async (req,res)=> {
    try {
     const errors = validationResult(req);
@@ -43,7 +89,7 @@ app.post('/auth/register',registerValidation, async (req,res)=> {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const doc = new userModal({
+    const doc = new userModel({
         email:req.body.email,
         fullName:req.body.fullName,
         avatarUrl:req.body.avatarUrl,
