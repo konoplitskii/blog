@@ -1,8 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import {registerValidation} from './validation/auth.js';
 import checkAuth from './utils/checkAuth.js';
-import * as UserController from './controllers/UserController.js'
+import * as UserController from './controllers/UserController.js';
+import * as PostController from './controllers/PostController.js';
+import {loginValidation, postCreateValidation, registerValidation} from "./validations.js";
 
 
 mongoose.connect('mongodb://localhost:27017/archblog')
@@ -29,15 +30,21 @@ app.use(express.json());
 // });
 
 
-app.post('/auth/login', UserController.login)
+app.post('/auth/login',loginValidation, UserController.login);
 app.post('/auth/register',registerValidation,UserController.register);
 //получаем информацию о пользователе
-app.get('/auth/me',checkAuth,UserController.getMe)
+app.get('/auth/me',checkAuth,UserController.getMe);
+
+app.get('/post',PostController.getAll);
+app.get('/post/:id',PostController.getOne);
+
+app.post('/post',checkAuth, postCreateValidation ,PostController.create);
+app.delete('/post/:id',checkAuth,PostController.remove);
+app.patch('/post/:id',checkAuth,PostController.update);
 
 app.listen(4444,(err)=> {
     if(err) {
         console.log(err)
     }
-
     console.log('Server start')
 });
