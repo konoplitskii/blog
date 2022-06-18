@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import {registerValidation} from './validation/auth.js'
 import {validationResult} from 'express-validator';
 import userModel from  './models/User.js';
+import checkAuth from './utils/checkAuth.js'
 
 
 mongoose.connect('mongodb://localhost:27017/archblog')
@@ -125,6 +126,22 @@ app.post('/auth/register',registerValidation, async (req,res)=> {
    }
 });
 
+//получаем информацию о пользователе
+app.get('/auth/me',checkAuth, async (req,res)=> {
+    try {
+    //    Находим пользователя
+        const user = await userModel.findById(req.userId)
+        if(!user) {
+            return res.status(404).json({
+                message: "Пользователь не найден"
+            })
+        }
+        const {passwordHash, ...userData} = user._doc
+        res.json(userData);
+    }catch (e) {
+        console.log(e)
+    }
+})
 
 app.listen(4444,(err)=> {
     if(err) {
