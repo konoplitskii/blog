@@ -1,4 +1,3 @@
-import {validationResult} from "express-validator";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import userModel from "../models/User.js";
@@ -6,11 +5,6 @@ import userModel from "../models/User.js";
 
 export const register =  async (req,res)=> {
     try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return res.status(400).json(errors.array())
-        }
-
         const password = req.body.password;
         // алгоритм шифровки пароля
         const salt = await bcrypt.genSalt(10);

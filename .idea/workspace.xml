@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b8d1dc56-3cec-4e50-bf28-83321ad57c52" name="Changes" comment="sad">
+    <list default="true" id="b8d1dc56-3cec-4e50-bf28-83321ad57c52" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/controllers/PostController.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/controllers/UserController.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/models/Post.js" afterDir="false" />
